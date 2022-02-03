@@ -7,4 +7,5 @@ build:
 
 run: build
 	GITHUB_AUTH_TOKEN=$(TOKEN) ./build/next -host github.tools.sap -source-owner cki -source-repo dummy-repo
+	GITHUB_AUTH_TOKEN=$(TOKEN) ./build/next -host github.tools.sap -source-owner cki -source-repo apache-tomcat
 	GITHUB_AUTH_TOKEN=$(GH_TOKEN) ./build/next -source-owner paketo-buildpacks -source-repo spring-boot

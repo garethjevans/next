@@ -46,6 +46,12 @@ func main() {
 		versions = append(versions, semver.MustParse(v))
 	}
 
+	if len(versions) == 0 {
+		// the initial version
+		fmt.Println("0.1.0")
+		return
+	}
+
 	sort.Sort(sort.Reverse(semver.Collection(versions)))
 	currentVersion := versions[0]
 
