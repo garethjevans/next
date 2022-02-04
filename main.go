@@ -15,6 +15,7 @@ var (
 	sourceOwner = flag.String("source-owner", "", "Name of the owner (user or org) of the repo to create the commit in.")
 	sourceRepo  = flag.String("source-repo", "", "Name of repo to create the commit in.")
 	host        = flag.String("host", "github.com", "The GitHub host to connect to")
+	debug       = flag.Bool("debug", false, "Enable debug logging")
 )
 
 var ctx = context.Background()
@@ -31,7 +32,11 @@ func main() {
 	if *host == "github.com" {
 		client = github.New(token)
 	} else {
-		client = github.NewEnterpriseClient(token, fmt.Sprintf("https://%s/api/graphql", *host))
+		gheHost := fmt.Sprintf("https://%s/api/graphql", *host)
+		if *debug {
+			fmt.Println("[DEBUG]", "host", gheHost)
+		}
+		client = github.NewEnterpriseClient(token, gheHost)
 	}
 
 	commitsFromReleases, err := client.FetchCommitsFromReleases(*sourceOwner, *sourceRepo)
@@ -39,11 +44,14 @@ func main() {
 		panic(err)
 	}
 
-	// fmt.Printf("all releases %+v\n", commitsFromReleases)
+	if *debug {
+		fmt.Printf("[DEBUG] all releases %+v\n", commitsFromReleases)
+	}
+
 	var versions []*semver.Version
 
-	for _, v := range commitsFromReleases {
-		versions = append(versions, semver.MustParse(v))
+	for version := range commitsFromReleases {
+		versions = append(versions, semver.MustParse(version))
 	}
 
 	if len(versions) == 0 {
@@ -55,13 +63,10 @@ func main() {
 	sort.Sort(sort.Reverse(semver.Collection(versions)))
 	currentVersion := versions[0]
 
-	// fmt.Printf("latest version %+s\n", currentVersion.String())
-	var commit string
-	for c, v := range commitsFromReleases {
-		if currentVersion.String() == v {
-			commit = c
-		}
+	if *debug {
+		fmt.Printf("[DEBUG] latest version %+s\n", currentVersion.String())
 	}
+	commit := commitsFromReleases[currentVersion.String()]
 
 	var allPullRequests []github.PullRequest
 
