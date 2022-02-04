@@ -78,10 +78,15 @@ func (g GitHub) FetchCommitsFromReleases(owner, repo string) (map[string]string,
 		return nil, err
 	}
 
+	//fmt.Printf("releaseSHAsQuery=%+v\n", releaseSHAsQuery)
+
 	releaseSHAs := map[string]string{}
+	// release name should be unique, commit won't be!
 	for _, release := range releaseSHAsQuery.Repository.Releases.Nodes {
-		releaseSHAs[release.Tag.Target.Oid] = release.Tag.Name
+		releaseSHAs[release.Tag.Name] = release.Tag.Target.Oid
 	}
+
+	//fmt.Printf("releaseSHAs=%+v\n", releaseSHAsQuery)
 
 	return releaseSHAs, nil
 }
