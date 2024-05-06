@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/shurcooL/githubv4 v0.0.0-20220115235240-a14260e6f8a2
-	golang.org/x/oauth2 v0.19.0
+	golang.org/x/oauth2 v0.20.0
 )
 
 require (
